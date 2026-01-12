@@ -31,7 +31,7 @@ export default async function PropertyDetails({ params }: PageProps) {
   }
 
   // Prepara dados para o WhatsApp e Maps
-  const PHONE_NUMBER = "5551999999999"; 
+  const PHONE_NUMBER = "5551981536500"; 
   const message = `Olá, vi o imóvel *${property.code}* no site e gostaria de mais informações.`;
   const whatsappLink = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
   const fullAddress = `${property.address || ""}, ${property.neighborhood}, ${property.city}`;
