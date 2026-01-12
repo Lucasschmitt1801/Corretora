@@ -24,17 +24,17 @@ export default async function Home({ searchParams }: HomeProps) {
     .select(`*, property_images (url, display_order)`)
     .eq("status", "disponivel");
 
-  // Filtros Básicos
-  if (params.city) query = query.eq('city', params.city);
-  if (params.neighborhood) query = query.eq('neighborhood', params.neighborhood);
-  if (params.type) query = query.eq('type', params.type);
-  if (params.category) query = query.eq('category', params.category);
+  // --- CORREÇÃO AQUI: Adicionado "as string" para acalmar o TypeScript ---
+  if (params.city) query = query.eq('city', params.city as string);
+  if (params.neighborhood) query = query.eq('neighborhood', params.neighborhood as string);
+  if (params.type) query = query.eq('type', params.type as string);
+  if (params.category) query = query.eq('category', params.category as string);
 
-  // Filtros de Valor (Novos)
-  if (params.minPrice) query = query.gte('price', Number(params.minPrice));
-  if (params.maxPrice) query = query.lte('price', Number(params.maxPrice));
+  // Filtros de Valor
+  if (params.minPrice) query = query.gte('price', Number(params.minPrice as string));
+  if (params.maxPrice) query = query.lte('price', Number(params.maxPrice as string));
 
-  // 3. Lógica de Ordenação (Switch Case)
+  // 3. Lógica de Ordenação
   const orderBy = (params.orderBy as string) || 'newest';
 
   switch (orderBy) {
