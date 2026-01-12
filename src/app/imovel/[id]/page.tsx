@@ -2,7 +2,8 @@ import { supabase } from "../../../lib/supabase";
 import { MapPin, Phone, ArrowLeft, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ImageGallery from "../../../components/ImageGallery"; // <--- Importamos aqui
+import { headers } from "next/headers"; // <--- Importante para pegar o link atual
+import ImageGallery from "../../../components/ImageGallery"; 
 
 export const revalidate = 0;
 
@@ -13,7 +14,7 @@ interface PageProps {
 export default async function PropertyDetails({ params }: PageProps) {
   const { id } = await params;
 
-  // Busca Imóvel + Fotos ordenadas
+  // 1. Busca Imóvel + Fotos
   const { data: property, error } = await supabase
     .from("properties")
     .select(`
@@ -27,15 +28,25 @@ export default async function PropertyDetails({ params }: PageProps) {
     .single();
 
   if (error || !property) {
-    notFound(); 
+    return notFound(); 
   }
 
-  // Prepara dados para o WhatsApp e Maps
+  // 2. Lógica para gerar o Link da Página (para o WhatsApp)
+  const headersList = await headers();
+  const host = headersList.get("host"); // Pega "localhost:3000" ou "seusite.vercel.app"
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  const propertyUrl = `${protocol}://${host}/imovel/${id}`;
+
+  // 3. Prepara dados de Contato
   const PHONE_NUMBER = "5551981536500"; 
-  const message = `Olá, vi o imóvel *${property.code}* no site e gostaria de mais informações.`;
+  
+  // Mensagem agora usa o LINK ao invés só do código
+  const message = `Olá! Vi este imóvel no site e gostaria de mais informações: ${propertyUrl}`;
   const whatsappLink = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
+
   const fullAddress = `${property.address || ""}, ${property.neighborhood}, ${property.city}`;
-  const googleMapsLink = `http://maps.google.com/?q=${encodeURIComponent(fullAddress)}`;
+  // Link corrigido para busca no Google Maps
+  const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
 
   return (
     <main className="min-h-screen bg-gray-50 pb-12">
@@ -52,7 +63,7 @@ export default async function PropertyDetails({ params }: PageProps) {
           {/* ESQUERDA: Galeria e Descrição */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* AQUI ESTÁ O NOVO COMPONENTE DE GALERIA */}
+            {/* Componente de Galeria */}
             <ImageGallery 
               images={property.property_images || []} 
               title={property.title} 
@@ -89,6 +100,7 @@ export default async function PropertyDetails({ params }: PageProps) {
                 {new Intl.NumberFormat("pt-BR", {
                   style: "currency",
                   currency: "BRL",
+                  maximumFractionDigits: 0
                 }).format(property.price)}
               </p>
 
@@ -97,7 +109,7 @@ export default async function PropertyDetails({ params }: PageProps) {
                   href={whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center w-full bg-green-600 text-white py-4 rounded-lg font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-200"
+                  className="flex items-center justify-center w-full bg-green-600 text-white py-4 rounded-lg font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-200 hover:-translate-y-1"
                 >
                   <Phone size={20} className="mr-2" />
                   Chamar no WhatsApp
