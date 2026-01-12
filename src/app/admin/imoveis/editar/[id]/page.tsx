@@ -45,8 +45,18 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
       } else {
         // Separa os dados: texto pro formulário, imagens pro estado visual
         const { property_images, ...textData } = data;
-        
-        reset(textData);
+
+        reset({
+          code: textData.code || "",
+         title: textData.title || "",
+         description: textData.description || "", // O erro principal estava aqui
+         price: textData.price || 0,
+         city: textData.city || "",
+         neighborhood: textData.neighborhood || "",
+         address: textData.address || "",
+            type: textData.type || "venda",
+            category: textData.category || "casa"
+            });
         // Ordena imagens antigas (opcional, aqui assumindo ordem de criação ou display_order)
         setCurrentImages(property_images || []);
         setIsLoading(false);
