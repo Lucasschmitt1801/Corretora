@@ -71,15 +71,8 @@ export default function PropertyFilter({ availableCities, availableNeighborhoods
             </select>
           </div>
 
-          {/* Negócio */}
-          <div>
-            <label className={labelClass}>Negócio</label>
-            <select value={type} onChange={(e) => setType(e.target.value)} className={selectClass}>
-              <option value="">Comprar ou Alugar</option>
-              <option value="venda">Comprar</option>
-              <option value="aluguel">Alugar</option>
-            </select>
-          </div>
+        
+      
 
           {/* Categoria */}
           <div>
