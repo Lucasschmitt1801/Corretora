@@ -2,7 +2,7 @@ import { supabase } from "../../../lib/supabase";
 import { MapPin, Phone, ArrowLeft, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { headers } from "next/headers"; // <--- Importante para pegar o link atual
+import { headers } from "next/headers"; 
 import ImageGallery from "../../../components/ImageGallery"; 
 
 export const revalidate = 0;
@@ -33,19 +33,17 @@ export default async function PropertyDetails({ params }: PageProps) {
 
   // 2. Lógica para gerar o Link da Página (para o WhatsApp)
   const headersList = await headers();
-  const host = headersList.get("host"); // Pega "localhost:3000" ou "seusite.vercel.app"
+  const host = headersList.get("host"); 
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
   const propertyUrl = `${protocol}://${host}/imovel/${id}`;
 
   // 3. Prepara dados de Contato
   const PHONE_NUMBER = "5551981536500"; 
   
-  // Mensagem agora usa o LINK ao invés só do código
   const message = `Olá! Vi este imóvel no site e gostaria de mais informações: ${propertyUrl}`;
   const whatsappLink = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
 
   const fullAddress = `${property.address || ""}, ${property.neighborhood}, ${property.city}`;
-  // Link corrigido para busca no Google Maps
   const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
 
   return (
@@ -63,7 +61,6 @@ export default async function PropertyDetails({ params }: PageProps) {
           {/* ESQUERDA: Galeria e Descrição */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* Componente de Galeria */}
             <ImageGallery 
               images={property.property_images || []} 
               title={property.title} 
@@ -96,7 +93,9 @@ export default async function PropertyDetails({ params }: PageProps) {
           <div className="lg:col-span-1">
             <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 sticky top-24">
               <p className="text-sm text-gray-500 mb-1">Valor do Investimento</p>
-              <p className="text-3xl font-bold text-gray-900 mb-6">
+              
+              {/* Valor Principal */}
+              <p className="text-3xl font-bold text-gray-900">
                 {new Intl.NumberFormat("pt-BR", {
                   style: "currency",
                   currency: "BRL",
@@ -104,6 +103,20 @@ export default async function PropertyDetails({ params }: PageProps) {
                 }).format(property.price)}
               </p>
 
+              {/* === CORREÇÃO FINAL === */}
+              {/* Usamos o nome correto 'condo_price' mantendo o 'as any' para evitar o erro vermelho */}
+              {(property as any).condo_price > 0 ? (
+                <p className="text-sm text-gray-500 mt-1 mb-6">
+                  + Condomínio: {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format((property as any).condo_price)}
+                </p>
+              ) : (
+                <div className="mb-6"></div>
+              )}
+
+              
               <div className="space-y-3">
                 <a
                   href={whatsappLink}
