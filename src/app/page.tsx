@@ -59,10 +59,10 @@ export default async function Home({ searchParams }: HomeProps) {
       <div className="bg-gradient-to-br from-primary to-primary-dark text-white pt-24 pb-32 px-4 shadow-md">
         <div className="container mx-auto text-center max-w-3xl">
           <h1 className="text-3xl md:text-5xl font-light mb-4 tracking-tight">
-            Imóveis exclusivos, <strong className="font-bold">selecionados para você.</strong>
+            Seu novo endereço <strong className="font-bold">começa aqui.</strong>
           </h1>
           <p className="text-white/80 text-base md:text-lg font-light">
-            Encontre o lugar perfeito com a curadoria de Eduarda Fiuza.
+            Experiência, critério e transparência em cada escolha.
           </p>
         </div>
       </div>
