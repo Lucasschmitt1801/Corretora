@@ -14,7 +14,6 @@ type PropertyFormData = {
 };
 
 export default function NewPropertyPage() {
-  // Adicionei setValue e watch aqui
   const { register, handleSubmit, setValue, watch } = useForm<PropertyFormData>();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +23,6 @@ export default function NewPropertyPage() {
   const [suggestedCities, setSuggestedCities] = useState<string[]>([]);
   const [suggestedNeighborhoods, setSuggestedNeighborhoods] = useState<string[]>([]);
 
-  // Monitora os valores atuais para passar pro componente visual
   const currentCity = watch("city");
   const currentNeighborhood = watch("neighborhood");
 
@@ -32,7 +30,6 @@ export default function NewPropertyPage() {
     async function fetchSuggestions() {
       const { data } = await supabase.from("properties").select("city, neighborhood");
       if (data) {
-        // Cria listas únicas e ordenadas
         const cities = Array.from(new Set(data.map(p => p.city?.trim()).filter(Boolean))).sort();
         const neighborhoods = Array.from(new Set(data.map(p => p.neighborhood?.trim()).filter(Boolean))).sort();
         setSuggestedCities(cities);
@@ -110,49 +107,51 @@ export default function NewPropertyPage() {
     }
   }
 
-  const inputClass = "mt-1 block w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 shadow-sm focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none";
+  // Estilo atualizado para Inputs (Foco Verde)
+  const inputClass = "mt-1 block w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all";
   const labelClass = "block text-sm font-bold text-gray-700 mb-1";
 
   return (
-    <main className="min-h-screen bg-gray-100 py-10 px-4">
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+    <main className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
         
-        <div className="flex items-center justify-between mb-8 border-b pb-4">
-          <h1 className="text-2xl font-bold text-gray-900">Novo Imóvel (Venda)</h1>
-          <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-900 flex items-center text-sm font-medium">
+        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+          <h1 className="text-2xl font-bold text-gray-800">Novo Imóvel (Venda)</h1>
+          <button onClick={() => router.back()} className="text-gray-400 hover:text-primary flex items-center text-sm font-medium transition-colors">
             <ArrowLeft size={16} className="mr-1"/> Voltar
           </button>
         </div>
         
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           
-          {/* Upload de Fotos - Mantido igual */}
-          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 text-center">
-             {/* ... Código do upload (igual ao anterior) ... */}
+          {/* Upload de Fotos */}
+          <div className="bg-gray-50/50 p-6 rounded-lg border border-gray-200 text-center">
+             
              <div className="mb-4">
-                <label className="cursor-pointer inline-flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg hover:bg-white hover:border-gray-400 transition-all">
+                <label className="cursor-pointer inline-flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg hover:bg-white hover:border-primary/50 transition-all group">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <UploadCloud className="w-10 h-10 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-500 font-medium">Clique para selecionar fotos</p>
+                    <UploadCloud className="w-10 h-10 text-gray-400 group-hover:text-primary transition-colors mb-2" />
+                    <p className="text-sm text-gray-500 group-hover:text-primary font-medium">Clique para selecionar fotos</p>
                   </div>
                   <input type="file" className="hidden" multiple accept="image/*" onChange={handleFileSelect} />
                 </label>
              </div>
+
              {previews.length > 0 && (
               <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mt-4">
                 {previews.map((src, index) => (
                   <div key={index} className="relative aspect-square bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 group">
                     <img src={src} alt="" className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => removeFile(index)} className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button type="button" onClick={() => removeFile(index)} className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-sm">
                       <X size={12} />
                     </button>
                   </div>
                 ))}
               </div>
-            )}
+             )}
           </div>
 
-          <hr />
+          <hr className="border-gray-100" />
 
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -180,7 +179,8 @@ export default function NewPropertyPage() {
               <textarea {...register("description")} rows={5} className={inputClass} placeholder="Detalhes sobre o imóvel..." />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
+            {/* Preços com estilo atualizado */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-xl border border-primary/20">
               <div>
                 <label className={labelClass}>Valor de Venda (R$)</label>
                 <input type="number" step="0.01" {...register("price", { required: true })} className={inputClass} />
@@ -191,10 +191,8 @@ export default function NewPropertyPage() {
               </div>
             </div>
             
-            {/* === AQUI É A MUDANÇA PRINCIPAL === */}
+            {/* Autocomplete Localização */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              {/* Componente Autocomplete de Cidade */}
               <AutocompleteInput 
                 label="Cidade"
                 value={currentCity}
@@ -203,7 +201,6 @@ export default function NewPropertyPage() {
                 placeholder="Ex: Novo Hamburgo"
               />
 
-              {/* Componente Autocomplete de Bairro */}
               <AutocompleteInput 
                 label="Bairro"
                 value={currentNeighborhood}
@@ -211,9 +208,7 @@ export default function NewPropertyPage() {
                 options={suggestedNeighborhoods}
                 placeholder="Ex: Centro"
               />
-
             </div>
-            {/* =================================== */}
 
             <div>
               <label className={labelClass}>Endereço (Rua, Número)</label>
@@ -222,11 +217,11 @@ export default function NewPropertyPage() {
 
           </div>
           
-          <div className="pt-4 border-t border-gray-100">
+          <div className="pt-6 border-t border-gray-100">
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full bg-gray-900 text-white py-4 rounded-lg font-bold hover:bg-black transition-all flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl disabled:opacity-70"
+              className="w-full bg-primary text-white py-4 rounded-lg font-bold hover:bg-primary-dark transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
             >
               <Save size={20} />
               {isLoading ? "Cadastrando..." : "Cadastrar Imóvel"}

@@ -36,10 +36,11 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
+      <div className="bg-white p-8 rounded-2xl shadow-xl shadow-gray-200/50 w-full max-w-md border border-gray-100">
         
         <div className="text-center mb-8">
-          <div className="bg-gray-900 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4 shadow-lg shadow-gray-300">
+          {/* Ícone com a cor Primary */}
+          <div className="bg-primary w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/30 rotate-3 hover:rotate-0 transition-all duration-500">
             <Lock className="text-white" size={24} />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Área Restrita</h1>
@@ -53,7 +54,8 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all placeholder-gray-400"
+              // Foco com cor Primary
+              className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder-gray-400"
               placeholder="seu@email.com"
               required
             />
@@ -65,7 +67,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-1 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all placeholder-gray-400"
+              className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder-gray-400"
               placeholder="••••••••"
               required
             />
@@ -74,16 +76,17 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gray-900 text-white font-bold py-3.5 rounded-lg hover:bg-black transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0"
+            // Botão Verde Sálvia
+            className="w-full bg-primary text-white font-bold py-3.5 rounded-lg hover:bg-primary-dark transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transform hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
           >
             {loading ? "Entrando..." : "Acessar Painel"}
             {!loading && <ArrowRight size={18} />}
           </button>
         </form>
         
-        <div className="mt-8 text-center">
-          <p className="text-xs text-gray-400">
-            Acesso exclusivo para corretores autorizados.
+        <div className="mt-8 text-center border-t border-gray-100 pt-6">
+          <p className="text-xs text-gray-400 font-medium">
+            Sistema seguro • Acesso exclusivo para corretores
           </p>
         </div>
       </div>

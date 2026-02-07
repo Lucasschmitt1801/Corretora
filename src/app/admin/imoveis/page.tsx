@@ -36,7 +36,7 @@ export default function AdminPropertiesList() {
     router.push("/login");
   };
 
-  // --- AÇÃO: FECHAR NEGÓCIO (VENDER/ALUGAR) ---
+  // --- AÇÃO: FECHAR NEGÓCIO ---
   const handleMarkAsSold = async (id: string, title: string, type: string, currentStatus: string) => {
     const isAvailable = currentStatus === 'disponivel';
     const newStatus = isAvailable 
@@ -108,13 +108,13 @@ export default function AdminPropertiesList() {
           <div className="flex gap-3 w-full md:w-auto">
             <button
               onClick={handleLogout}
-              className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex items-center gap-2"
+              className="px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 hover:text-red-500 rounded-lg transition-colors flex items-center gap-2 border border-gray-200"
             >
               <LogOut size={16} /> Sair
             </button>
             <Link
               href="/admin/imoveis/novo"
-              className="flex-1 md:flex-none px-5 py-2.5 text-sm font-bold text-white bg-gray-900 hover:bg-black rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+              className="flex-1 md:flex-none px-5 py-2.5 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl shadow-primary/20"
             >
               <Plus size={18} /> Novo Imóvel
             </Link>
@@ -123,8 +123,10 @@ export default function AdminPropertiesList() {
 
         {/* CARDS DE ESTATÍSTICAS (KPIs) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+          
+          {/* Card 1: Imóveis na Vitrine (Ativos) */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 group hover:border-primary/30 transition-all">
+            <div className="p-3 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all">
               <Building2 size={24} />
             </div>
             <div>
@@ -133,9 +135,10 @@ export default function AdminPropertiesList() {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 relative overflow-hidden">
-            <div className="absolute right-0 top-0 h-full w-1 bg-green-500"></div>
-            <div className="p-3 bg-green-50 text-green-600 rounded-xl">
+          {/* Card 2: Negócios Fechados */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 relative overflow-hidden group">
+            <div className="absolute right-0 top-0 h-full w-1 bg-primary-dark"></div>
+            <div className="p-3 bg-gray-50 text-primary-dark rounded-xl group-hover:bg-primary-dark group-hover:text-white transition-all">
               <DollarSign size={24} />
             </div>
             <div>
@@ -143,12 +146,13 @@ export default function AdminPropertiesList() {
               <h3 className="text-2xl font-bold text-gray-900">
                 {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", notation: "compact" }).format(closedDealsValue)}
               </h3>
-              <p className="text-xs text-green-600 font-medium mt-1">{closedDealsCount} imóveis vendidos/alugados</p>
+              <p className="text-xs text-primary-dark font-medium mt-1">{closedDealsCount} vendidos/alugados</p>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 opacity-70">
-            <div className="p-3 bg-gray-100 text-gray-400 rounded-xl">
+          {/* Card 3: Total Geral */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 opacity-80">
+            <div className="p-3 bg-gray-100 text-gray-500 rounded-xl">
               <Building2 size={24} />
             </div>
             <div>
@@ -161,23 +165,23 @@ export default function AdminPropertiesList() {
         {/* ÁREA DA TABELA */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           
-          {/* Barra de Busca - CORRIGIDO AQUI */}
+          {/* Barra de Busca */}
           <div className="p-6 border-b border-gray-100 flex items-center gap-4">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input 
                 type="text"
                 placeholder="Buscar por título ou código..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all"
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
               />
             </div>
           </div>
 
           {/* Tabela */}
           {loading ? (
-            <div className="p-12 text-center text-gray-500 animate-pulse">Carregando seus imóveis...</div>
+            <div className="p-12 text-center text-primary font-medium animate-pulse">Carregando seus imóveis...</div>
           ) : filteredProperties.length === 0 ? (
             <div className="p-12 text-center text-gray-400">
               Nenhum imóvel encontrado.
@@ -200,13 +204,13 @@ export default function AdminPropertiesList() {
                     const isSoldOrRented = prop.status === 'vendido' || prop.status === 'alugado';
                     
                     return (
-                      <tr key={prop.id} className={`transition-colors group ${isSoldOrRented ? 'bg-gray-50 opacity-70' : 'hover:bg-gray-50/80'}`}>
+                      <tr key={prop.id} className={`transition-colors group ${isSoldOrRented ? 'bg-gray-50/80 opacity-60' : 'hover:bg-primary/5'}`}>
                         <td className="px-6 py-4">
-                          <div className="w-12 h-12 rounded-lg bg-gray-200 overflow-hidden border border-gray-200 grayscale-0 group-hover:grayscale-0 transition-all">
+                          <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden border border-gray-200">
                             {thumb ? (
                               <img src={thumb} className={`w-full h-full object-cover ${isSoldOrRented ? 'grayscale' : ''}`} alt="" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-gray-400 text-[10px]">Sem foto</div>
+                              <div className="w-full h-full flex items-center justify-center text-gray-300 text-[10px]">Sem foto</div>
                             )}
                           </div>
                         </td>
@@ -218,7 +222,7 @@ export default function AdminPropertiesList() {
                           <div className="text-xs text-gray-400 font-mono mt-0.5">Ref: {prop.code}</div>
                         </td>
 
-                        <td className="px-6 py-4 font-bold text-gray-900">
+                        <td className="px-6 py-4 font-bold text-gray-700">
                           {new Intl.NumberFormat("pt-BR", {
                             style: "currency",
                             currency: "BRL",
@@ -228,15 +232,11 @@ export default function AdminPropertiesList() {
 
                         <td className="px-6 py-4 text-center">
                           {isSoldOrRented ? (
-                             <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-gray-200 text-gray-600">
+                             <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-gray-200 text-gray-500 border border-gray-300">
                                {prop.status}
                              </span>
                           ) : (
-                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${
-                              prop.type === 'venda' 
-                                ? 'bg-blue-50 text-blue-700 border border-blue-100' 
-                                : 'bg-green-50 text-green-700 border border-green-100'
-                            }`}>
+                            <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
                               Disponível
                             </span>
                           )}
@@ -244,29 +244,32 @@ export default function AdminPropertiesList() {
 
                         <td className="px-6 py-4">
                           <div className="flex justify-end gap-2">
+                            {/* Botão Check / Rotate */}
                             <button
                               onClick={() => handleMarkAsSold(prop.id, prop.title, prop.type, prop.status)}
                               className={`p-2 rounded-lg transition-all ${
                                 isSoldOrRented 
-                                  ? 'text-orange-400 hover:text-orange-700 hover:bg-orange-50' 
-                                  : 'text-green-600 hover:text-green-800 hover:bg-green-50'
+                                  ? 'text-gray-400 hover:text-primary hover:bg-primary/10' 
+                                  : 'text-primary-dark/70 hover:text-primary-dark hover:bg-primary/10'
                               }`}
                               title={isSoldOrRented ? "Tornar disponível novamente" : "Marcar como Vendido/Alugado"}
                             >
                               {isSoldOrRented ? <RotateCcw size={16} /> : <CheckCircle2 size={16} />}
                             </button>
 
+                            {/* Botão Editar */}
                             <Link
                               href={`/admin/imoveis/editar/${prop.id}`}
-                              className="p-2 text-blue-400 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all"
+                              className="p-2 text-primary/70 hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
                               title="Editar"
                             >
                               <Edit size={16} />
                             </Link>
 
+                            {/* Botão Excluir */}
                             <button
                               onClick={() => handleDelete(prop.id, prop.title)}
-                              className="p-2 text-red-400 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
+                              className="p-2 text-red-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                               title="Excluir"
                             >
                               <Trash2 size={16} />

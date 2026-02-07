@@ -6,7 +6,7 @@ import { supabase } from "../../../../../lib/supabase";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft, Save, Trash2, Image as ImageIcon } from "lucide-react";
 
-// Importe o componente que criamos (Ajuste o caminho se necessário)
+// Importe o componente que criamos
 import AutocompleteInput from "../../../../../components/AutocompleteInput";
 
 type PropertyFormData = {
@@ -23,7 +23,6 @@ export default function EditPropertyPage() {
   const params = useParams(); 
   const id = params?.id as string; 
   
-  // Adicionamos setValue e watch para controlar os inputs customizados
   const { register, handleSubmit, reset, setValue, watch } = useForm<PropertyFormData>();
   
   const router = useRouter();
@@ -36,7 +35,6 @@ export default function EditPropertyPage() {
   const [suggestedCities, setSuggestedCities] = useState<string[]>([]);
   const [suggestedNeighborhoods, setSuggestedNeighborhoods] = useState<string[]>([]);
 
-  // Monitora os valores para passar para o componente visual
   const currentCity = watch("city");
   const currentNeighborhood = watch("neighborhood");
 
@@ -50,7 +48,6 @@ export default function EditPropertyPage() {
         .eq("id", id)
         .single();
 
-      // Carrega sugestões de cidades/bairros existentes para o autocomplete
       const { data: allProps } = await supabase.from("properties").select("city, neighborhood");
       if (allProps) {
         setSuggestedCities(Array.from(new Set(allProps.map(p => p.city?.trim()).filter(Boolean))).sort());
@@ -154,18 +151,18 @@ export default function EditPropertyPage() {
     }
   }
 
-  if (isLoading) return <div className="min-h-screen flex items-center justify-center text-gray-500">Carregando dados...</div>;
+  if (isLoading) return <div className="min-h-screen flex items-center justify-center text-primary font-bold">Carregando dados...</div>;
 
-  const inputClass = "mt-1 block w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 shadow-sm focus:border-gray-900 outline-none";
+  const inputClass = "mt-1 block w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 shadow-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all";
   const labelClass = "block text-sm font-bold text-gray-700 mb-1";
 
   return (
-    <main className="min-h-screen bg-gray-100 py-10 px-4">
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+    <main className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
         
-        <div className="flex items-center justify-between mb-8 border-b pb-4">
-          <h1 className="text-2xl font-bold text-gray-900">Editar Imóvel (Venda)</h1>
-          <button type="button" onClick={() => router.back()} className="text-gray-500 hover:text-gray-900 flex items-center text-sm font-medium">
+        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
+          <h1 className="text-2xl font-bold text-gray-800">Editar Imóvel (Venda)</h1>
+          <button type="button" onClick={() => router.back()} className="text-gray-400 hover:text-primary flex items-center text-sm font-medium transition-colors">
             <ArrowLeft size={16} className="mr-1"/> Voltar
           </button>
         </div>
@@ -173,30 +170,44 @@ export default function EditPropertyPage() {
         <form onSubmit={handleSubmit(onUpdate)} className="space-y-8">
           
           {/* Fotos */}
-          <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><ImageIcon size={20} /> Gerenciar Fotos</h3>
+          <div className="bg-gray-50/50 p-6 rounded-lg border border-gray-200">
+            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><ImageIcon size={20} className="text-primary" /> Gerenciar Fotos</h3>
+            
+            {/* Lista de Imagens Atuais */}
             {currentImages.length > 0 && (
-              <div className="mb-6 grid grid-cols-5 gap-4">
+              <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
                   {currentImages.map((img) => (
-                    <div key={img.id} className="relative group aspect-square bg-gray-200 rounded overflow-hidden">
+                    <div key={img.id} className="relative group aspect-square bg-gray-200 rounded-lg overflow-hidden shadow-sm border border-gray-200">
                       <img src={img.url} className="w-full h-full object-cover" />
-                      <button type="button" onClick={() => handleDeleteExistingImage(img.id)} className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full"><Trash2 size={12} /></button>
+                      <button type="button" onClick={() => handleDeleteExistingImage(img.id)} className="absolute top-1 right-1 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors shadow-sm"><Trash2 size={12} /></button>
                     </div>
                   ))}
               </div>
             )}
-             <label className="cursor-pointer block border-2 border-dashed border-gray-300 p-4 text-center rounded hover:bg-white">
-                <span className="text-gray-500">Adicionar fotos +</span>
+
+            {/* Upload */}
+             <label className="cursor-pointer block border-2 border-dashed border-gray-300 p-8 text-center rounded-xl hover:bg-white hover:border-primary/50 transition-all group">
+                <span className="text-gray-500 group-hover:text-primary font-medium">Clique para adicionar novas fotos +</span>
                 <input type="file" className="hidden" multiple accept="image/*" onChange={handleFileSelect} />
              </label>
+
+             {/* Preview de Novas Imagens */}
              {newPreviews.length > 0 && (
-                <div className="mt-4 grid grid-cols-5 gap-4">
-                   {newPreviews.map((src, i) => <img key={i} src={src} className="aspect-square object-cover rounded border border-green-500" />)}
+                <div className="mt-6">
+                    <p className="text-xs font-bold text-primary mb-2 uppercase tracking-wider">Novas imagens selecionadas:</p>
+                    <div className="grid grid-cols-5 gap-4">
+                       {newPreviews.map((src, i) => (
+                           <div key={i} className="relative aspect-square">
+                               <img src={src} className="w-full h-full object-cover rounded-lg border-2 border-primary" />
+                               <button type="button" onClick={() => removeNewFile(i)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600"><Trash2 size={10}/></button>
+                           </div>
+                       ))}
+                    </div>
                 </div>
              )}
           </div>
 
-          <hr className="border-gray-200" />
+          <hr className="border-gray-100" />
 
           {/* Dados de Texto */}
           <div className="space-y-6">
@@ -216,13 +227,13 @@ export default function EditPropertyPage() {
             <div><label className={labelClass}>Título</label><input {...register("title")} className={inputClass} /></div>
             <div><label className={labelClass}>Descrição</label><textarea {...register("description")} rows={6} className={inputClass} /></div>
 
-            {/* Valores com Condomínio */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50 p-4 rounded-lg">
+            {/* Valores com Condomínio - Cores Ajustadas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-xl border border-primary/20">
               <div><label className={labelClass}>Valor de Venda (R$)</label><input type="number" step="0.01" {...register("price")} className={inputClass} /></div>
               <div><label className={labelClass}>Condomínio (R$)</label><input type="number" step="0.01" {...register("condo_price")} className={inputClass} /></div>
             </div>
             
-            {/* Endereço com Sugestões Profissionais (Autocomplete) */}
+            {/* Endereço com Autocomplete */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <AutocompleteInput 
                 label="Cidade"
@@ -243,9 +254,9 @@ export default function EditPropertyPage() {
             <div><label className={labelClass}>Endereço Completo</label><input {...register("address")} className={inputClass} /></div>
           </div>
           
-          <div className="flex gap-4 pt-4 border-t border-gray-100">
-            <button type="button" onClick={() => router.back()} className="px-6 py-3 rounded-lg border border-gray-300 font-bold">Cancelar</button>
-            <button type="submit" disabled={isLoading} className="flex-1 bg-gray-900 text-white py-3 rounded-lg font-bold hover:bg-black flex items-center justify-center gap-2"><Save size={18} /> Salvar Alterações</button>
+          <div className="flex gap-4 pt-6 border-t border-gray-100">
+            <button type="button" onClick={() => router.back()} className="px-6 py-3 rounded-lg border border-gray-300 font-bold text-gray-600 hover:text-primary hover:border-primary transition-all">Cancelar</button>
+            <button type="submit" disabled={isLoading} className="flex-1 bg-primary text-white py-3 rounded-lg font-bold hover:bg-primary-dark transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"><Save size={18} /> Salvar Alterações</button>
           </div>
 
         </form>

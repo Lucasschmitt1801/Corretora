@@ -1,24 +1,28 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* AQUI É O SEU NOVO PAINEL DE CONTROLE 
+  No Tailwind v4, definimos as cores dentro de @theme
+*/
+@theme {
+  /* Suas cores personalizadas (Verde Sálvia) */
+  --color-primary: #7c947c; 
+  --color-primary-dark: #5a6e5a;
+  --color-primary-light: #a3bfa3;
 
-@theme inline {
+  /* Configurações padrão do sistema */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Configuração do Fundo Branco Limpo */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
+/* Removemos a detecção de modo escuro para garantir o site sempre claro/clean */
 body {
   background: var(--background);
   color: var(--foreground);
