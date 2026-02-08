@@ -8,12 +8,17 @@ export default function Navbar() {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="bg-gray-900 text-white p-2 rounded-lg group-hover:bg-black transition-colors">
+          
+          {/* Ícone Verde */}
+          <div className="bg-primary text-white p-2 rounded-lg group-hover:bg-primary-dark transition-colors shadow-md shadow-primary/20">
             <Building2 size={20} />
           </div>
-          <span className="font-bold text-xl tracking-tight text-gray-900">
-            EDUARDA<span className="font-light text-gray-500">FIUZA</span>
+
+          {/* Texto Verde Sálvia */}
+          <span className="font-bold text-xl tracking-tight text-primary group-hover:text-primary-dark transition-colors">
+            EDUARDA<span className="font-light text-primary/70">FIUZA</span>
           </span>
+          
         </Link>
         
         {/* Links removidos conforme solicitado */}

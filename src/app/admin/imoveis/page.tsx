@@ -5,8 +5,8 @@ import { supabase } from "../../../lib/supabase";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { 
-  Trash2, Edit, Plus, ExternalLink, LogOut, 
-  Search, Building2, CheckCircle2, DollarSign, RotateCcw
+  Trash2, Edit, Plus, LogOut, 
+  Search, Building2, CheckCircle2, DollarSign, RotateCcw, Tag
 } from "lucide-react";
 
 export default function AdminPropertiesList() {
@@ -105,13 +105,25 @@ export default function AdminPropertiesList() {
             <p className="text-sm text-gray-500">Gerencie seu portfólio imobiliário</p>
           </div>
 
-          <div className="flex gap-3 w-full md:w-auto">
+          <div className="flex flex-wrap gap-3 w-full md:w-auto">
+            
+            {/* Botão Sair */}
             <button
               onClick={handleLogout}
               className="px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 hover:text-red-500 rounded-lg transition-colors flex items-center gap-2 border border-gray-200"
             >
               <LogOut size={16} /> Sair
             </button>
+
+            {/* --- NOVO BOTÃO: GERENCIAR CATEGORIAS --- */}
+            <Link
+              href="/admin/categorias"
+              className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary rounded-lg transition-all flex items-center gap-2"
+            >
+               <Tag size={16} /> Categorias
+            </Link>
+
+            {/* Botão Novo Imóvel */}
             <Link
               href="/admin/imoveis/novo"
               className="flex-1 md:flex-none px-5 py-2.5 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl shadow-primary/20"

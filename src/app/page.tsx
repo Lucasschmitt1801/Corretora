@@ -12,6 +12,7 @@ interface HomeProps {
 export default async function Home({ searchParams }: HomeProps) {
   const params = await searchParams;
 
+  // 1. Busca lista de locais (Cidade + Bairro)
   const { data: allLocationsData } = await supabase
     .from("properties")
     .select("city, neighborhood")
@@ -24,6 +25,14 @@ export default async function Home({ searchParams }: HomeProps) {
     ?.filter(p => p.city && p.neighborhood)
     .map(p => ({ city: p.city as string, neighborhood: p.neighborhood as string })) || [];
 
+  // 2. NOVA BUSCA: Categorias do Banco de Dados
+  // Buscamos apenas o título e o slug (ex: "Sala Comercial", "sala_comercial")
+  const { data: categoriesData } = await supabase
+    .from("categories" as any) // 'as any' para evitar erro de tipagem se a tabela for nova
+    .select("title, slug")
+    .order("title");
+
+  // 3. Query Principal de Busca
   let query = supabase
     .from("properties")
     .select(`*, property_images (url, display_order)`)
@@ -32,7 +41,10 @@ export default async function Home({ searchParams }: HomeProps) {
   if (params.city) query = query.eq('city', params.city as string);
   if (params.neighborhood) query = query.eq('neighborhood', params.neighborhood as string);
   if (params.type) query = query.eq('type', params.type as string);
+  
+  // O filtro de categoria agora usa o slug que vem da URL
   if (params.category) query = query.eq('category', params.category as string);
+  
   if (params.minPrice) query = query.gte('price', Number(params.minPrice as string));
   if (params.maxPrice) query = query.lte('price', Number(params.maxPrice as string));
 
@@ -52,10 +64,6 @@ export default async function Home({ searchParams }: HomeProps) {
   return (
     <main className="min-h-screen bg-gray-50 pb-20">
       
-      {/* AQUI ESTÁ A MÁGICA:
-          Usamos 'from-primary' e 'to-primary-dark'.
-          O Tailwind vai ler essas cores lá do arquivo tailwind.config.ts
-      */}
       <div className="bg-gradient-to-br from-primary to-primary-dark text-white pt-24 pb-32 px-4 shadow-md">
         <div className="container mx-auto text-center max-w-3xl">
           <h1 className="text-3xl md:text-5xl font-light mb-4 tracking-tight">
@@ -67,14 +75,15 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       </div>
 
+      {/* PASSAMOS AS CATEGORIAS PARA O FILTRO AQUI */}
       <PropertyFilter 
         availableCities={uniqueCities as string[]} 
         allLocations={allLocations}
+        categories={(categoriesData as any) || []} 
       />
 
       <div className="container mx-auto px-4 mt-16 max-w-7xl">
         
-        {/* Borda usando 'border-primary' */}
         <h2 className="text-xl font-semibold text-gray-800 mb-8 pl-1 border-l-4 border-primary flex justify-between items-end">
           <span>Destaques Recentes</span>
           <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">
@@ -85,7 +94,6 @@ export default async function Home({ searchParams }: HomeProps) {
         {(!properties || properties.length === 0) ? (
             <div className="text-center py-20 text-gray-400">
                 <p className="mb-2">Nenhum imóvel encontrado com esses filtros.</p>
-                {/* Texto usando 'text-primary' */}
                 <Link href="/" className="text-primary hover:underline font-medium inline-flex items-center gap-1">
                    Limpar filtros
                 </Link>
@@ -106,7 +114,6 @@ export default async function Home({ searchParams }: HomeProps) {
                         <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">Sem foto</div>
                         )}
                         
-                        {/* Fundo da etiqueta usando 'bg-primary' */}
                         <span className={`absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest text-white px-2 py-1 rounded-sm ${property.type === 'venda' ? 'bg-gray-900/90' : 'bg-primary/90'}`}>
                           {property.type}
                         </span>
@@ -117,7 +124,6 @@ export default async function Home({ searchParams }: HomeProps) {
                           {property.category?.replace('_', ' ') || 'Imóvel'}
                         </div>
                         
-                        {/* Hover do texto usando 'hover:text-primary' */}
                         <h3 className="text-sm font-bold text-gray-900 mb-2 line-clamp-2 leading-snug group-hover:text-primary">
                           {property.title}
                         </h3>

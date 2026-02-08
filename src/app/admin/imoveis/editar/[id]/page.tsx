@@ -32,6 +32,8 @@ export default function EditPropertyPage() {
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
 
+  // Estados Dinâmicos
+  const [categories, setCategories] = useState<any[]>([]);
   const [suggestedCities, setSuggestedCities] = useState<string[]>([]);
   const [suggestedNeighborhoods, setSuggestedNeighborhoods] = useState<string[]>([]);
 
@@ -42,12 +44,21 @@ export default function EditPropertyPage() {
     async function loadData() {
       if (!id) return;
 
+      // 1. Busca Imóvel
       const { data: property, error } = await supabase
         .from("properties")
         .select(`*, property_images (id, url, display_order)`)
         .eq("id", id)
         .single();
 
+      // 2. Busca Categorias (NOVO)
+      const { data: catData } = await supabase
+        .from("categories" as any)
+        .select("*")
+        .order("title");
+      if (catData) setCategories(catData);
+
+      // 3. Busca Sugestões de Localização
       const { data: allProps } = await supabase.from("properties").select("city, neighborhood");
       if (allProps) {
         setSuggestedCities(Array.from(new Set(allProps.map(p => p.city?.trim()).filter(Boolean))).sort());
@@ -70,7 +81,7 @@ export default function EditPropertyPage() {
           city: textData.city || "",
           neighborhood: textData.neighborhood || "",
           address: textData.address || "",
-          category: textData.category || "casa"
+          category: textData.category || "" // Se a categoria antiga não existir, fica vazio
         });
         
         setCurrentImages(property_images || []);
@@ -213,15 +224,23 @@ export default function EditPropertyPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div><label className={labelClass}>Código</label><input {...register("code")} className={inputClass} /></div>
+              
+              {/* SELECT DINÂMICO AQUI */}
               <div>
                 <label className={labelClass}>Categoria</label>
                 <select {...register("category")} className={inputClass}>
-                  <option value="casa">Casa</option>
-                  <option value="apartamento">Apartamento</option>
-                  <option value="terreno">Terreno</option>
-                  <option value="sala_comercial">Sala Comercial</option>
+                  <option value="">Selecione...</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.slug}>
+                      {cat.title}
+                    </option>
+                  ))}
                 </select>
+                <p className="text-xs text-right mt-1">
+                   Não achou? <a href="/admin/categorias" target="_blank" className="text-primary hover:underline">Criar nova categoria</a>
+                </p>
               </div>
+
             </div>
 
             <div><label className={labelClass}>Título</label><input {...register("title")} className={inputClass} /></div>
