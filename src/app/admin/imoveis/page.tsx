@@ -158,7 +158,7 @@ export default function AdminPropertiesList() {
               <h3 className="text-2xl font-bold text-gray-900">
                 {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", notation: "compact" }).format(closedDealsValue)}
               </h3>
-              <p className="text-xs text-primary-dark font-medium mt-1">{closedDealsCount} vendidos/alugados</p>
+              <p className="text-xs text-primary-dark font-medium mt-1">{closedDealsCount} vendidos</p>
             </div>
           </div>
 
@@ -264,7 +264,7 @@ export default function AdminPropertiesList() {
                                   ? 'text-gray-400 hover:text-primary hover:bg-primary/10' 
                                   : 'text-primary-dark/70 hover:text-primary-dark hover:bg-primary/10'
                               }`}
-                              title={isSoldOrRented ? "Tornar disponível novamente" : "Marcar como Vendido/Alugado"}
+                              title={isSoldOrRented ? "Tornar disponível novamente" : "Marcar como Vendido"}
                             >
                               {isSoldOrRented ? <RotateCcw size={16} /> : <CheckCircle2 size={16} />}
                             </button>
