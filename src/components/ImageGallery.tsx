@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, X, Expand } from "lucide-react";
 
 interface PropertyImage {
   url: string;
-  display_order: number;
+  display_order: number | null; // Correção do TypeScript aqui!
 }
 
 interface ImageGalleryProps {
@@ -14,12 +14,9 @@ interface ImageGalleryProps {
 }
 
 export default function ImageGallery({ images, title }: ImageGalleryProps) {
-  // Índice da imagem selecionada (começa na 0)
   const [selectedIndex, setSelectedIndex] = useState(0);
-  // Estado para controlar se o modal de tela cheia está aberto
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Se não houver imagens, mostra um placeholder
   if (!images || images.length === 0) {
     return (
       <div className="aspect-[4/3] bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 font-medium border border-gray-100 shadow-sm">
@@ -28,29 +25,22 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
     );
   }
 
-  // Garante que as imagens estão ordenadas
+  // Garante que as imagens estão ordenadas (tratando o null)
   const sortedImages = [...images].sort((a, b) => (a.display_order || 99) - (b.display_order || 99));
   const mainImage = sortedImages[selectedIndex];
   const hasMultipleImages = sortedImages.length > 1;
 
-  // --- Funções de Navegação ---
-
-  // Avançar (usa useCallback para otimizar e usar no useEffect)
   const handleNext = useCallback((e?: React.MouseEvent) => {
-    e?.stopPropagation(); // Evita fechar o modal se clicar na seta
+    e?.stopPropagation();
     setSelectedIndex((prev) => (prev + 1) % sortedImages.length);
   }, [sortedImages.length]);
 
-  // Voltar
   const handlePrev = useCallback((e?: React.MouseEvent) => {
     e?.stopPropagation();
     setSelectedIndex((prev) => (prev - 1 + sortedImages.length) % sortedImages.length);
   }, [sortedImages.length]);
 
-
-  // --- Suporte a Teclado (Setas e ESC) ---
   useEffect(() => {
-    // Só ativa os atalhos se o modal estiver aberto
     if (!isFullscreen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -61,13 +51,11 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
 
     window.addEventListener('keydown', handleKeyDown);
 
-    // Limpeza do evento quando o componente desmonta ou o modal fecha
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isFullscreen, handleNext, handlePrev]);
 
-  // Impede a rolagem da página de fundo quando o modal está aberto
   useEffect(() => {
     if (isFullscreen) {
       document.body.style.overflow = 'hidden';
@@ -81,10 +69,9 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
   return (
     <div className="space-y-4 select-none">
       
-      {/* --- ÁREA DA IMAGEM PRINCIPAL (Na página) --- */}
       <div 
         className="aspect-[4/3] relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-100 group cursor-zoom-in"
-        onClick={() => setIsFullscreen(true)} // Abre o modal ao clicar
+        onClick={() => setIsFullscreen(true)}
       >
         <img 
           src={mainImage.url} 
@@ -92,14 +79,12 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
         
-        {/* Overlay com ícone de expandir no hover */}
         <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100">
             <div className="bg-white/90 p-3 rounded-full text-gray-800 shadow-lg backdrop-blur-sm">
                 <Expand size={24} />
             </div>
         </div>
 
-        {/* Setas de navegação na imagem principal (se houver mais de uma) */}
         {hasMultipleImages && (
           <>
             <button 
@@ -117,13 +102,11 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
           </>
         )}
 
-        {/* Contador discreto */}
         <div className="absolute bottom-4 right-4 bg-black/50 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-md font-medium">
             {selectedIndex + 1} / {sortedImages.length}
         </div>
       </div>
 
-      {/* --- MINIATURAS (Thumbnails) --- */}
       {hasMultipleImages && (
         <div className="grid grid-cols-4 gap-3">
           {sortedImages.map((img, index) => (
@@ -149,13 +132,11 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
         </div>
       )}
 
-      {/* --- MODAL DE TELA CHEIA (Lightbox) --- */}
       {isFullscreen && (
         <div 
             className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-200"
-            onClick={() => setIsFullscreen(false)} // Fecha ao clicar no fundo
+            onClick={() => setIsFullscreen(false)}
         >
-            {/* Botão Fechar (X) */}
             <button 
                 onClick={() => setIsFullscreen(false)}
                 className="absolute top-5 right-5 text-white/60 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all z-50"
@@ -163,17 +144,15 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
                 <X size={32} />
             </button>
 
-            {/* Imagem Grande */}
             <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
                 <img 
                     src={mainImage.url} 
                     alt={`Visão ampliada ${selectedIndex + 1}`}
                     className="max-w-full max-h-full object-contain shadow-2xl select-none"
-                    onClick={(e) => e.stopPropagation()} // Impede que clicar na imagem feche o modal
+                    onClick={(e) => e.stopPropagation()}
                 />
             </div>
 
-            {/* Setas de Navegação do Modal */}
             {hasMultipleImages && (
                 <>
                     <button 
@@ -191,7 +170,6 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
                 </>
             )}
             
-            {/* Contador do Modal */}
             <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-white/50 text-sm">
                 Foto {selectedIndex + 1} de {sortedImages.length}
             </div>
